@@ -89,12 +89,10 @@ def update_user(_id):
      #   hashed_password = generate_password_hash(password)
       #  mongo.db.users.update_one(
       #      {'_id': ObjectId(_id['$oid']) if '$oid' in _id else ObjectId(_id)}, {'$set': {'username': username, 'email': email, 'password': hashed_password}})
-        response = jsonify({'message': 'User Updated Successfuly'})
-        response.status_code = 200
-        return response
-    else:
-      return not_found()
-
+    response = jsonify({'message': 'User Updated Successfuly'})
+    response.status_code = 200
+    return response
+    
 
 @app.errorhandler(404)
 def not_found(error=None):
