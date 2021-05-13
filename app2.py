@@ -4,16 +4,17 @@ from flask_pymongo import PyMongo
 from bson import json_util
 from bson.objectid import ObjectId
 import json
+import os
 
 from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
 
-import os
 
-servicio_db = os.environ['HOSTNAME']
-password_db = os.environ['PASSWORD']
-user_db = os.environ['USERNAME']
+
+servicio_db = os.getenv('HOSTNAME')
+password_db = os.getenv('PASSWORD')
+user_db = os.getenv('USERNAME')
 MONGO_URI = "mongodb://"+user_db+":"+password_db+"@"+servicio_db+"/pythonmongodb"
 
 
