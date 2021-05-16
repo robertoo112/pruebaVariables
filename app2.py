@@ -1,6 +1,6 @@
 
 from flask import Flask, jsonify, request, Response
-from flask_pymongo import PyMongo
+from pymongo import MongoClient
 from bson import json_util
 from bson.objectid import ObjectId
 import json
@@ -23,15 +23,18 @@ if password_db == None:
 if user_db == None:
     user_db = "admin"
 if port_db == None:
-    port_db = '27017'
-MONGO_URI = "mongodb://"+user_db+":"+password_db+"@"+servicio_db+":"+port_db+"/pythonmongodb"
+    port_db = "27017"
+MONGO_URI = "mongodb://"+user_db+":"+password_db+"@"+servicio_db+":"+port_db
+print(MONGO_URI)
 
 
 app.secret_key = 'myawesomesecretkey'
 
-app.config['MONGO_URI'] = MONGO_URI
+#app.config['MONGO_URI'] = MONGO_URI
 
-mongo = PyMongo(app)
+mongo = MongoClient(MONGO_URI)
+db = mongo.test_database
+users = db.users
 
 
 @app.route('/users', methods=['POST'])
@@ -43,7 +46,7 @@ def create_user():
 
     if username and email and password:
         hashed_password = generate_password_hash(password)
-        id = mongo.db.users.insert(
+        id = users.insert(
             {'username': username, 'email': email, 'password': hashed_password})
         response = jsonify({
             '_id': str(123423),
@@ -59,7 +62,7 @@ def create_user():
 
 @app.route('/users', methods=['GET'])
 def get_users():
-    users = mongo.db.users.find()
+    users = users.find()
     response = json_util.dumps(users)
     return Response(response, mimetype="application/json")
 
@@ -67,14 +70,14 @@ def get_users():
 @app.route('/users/<id>', methods=['GET'])
 def get_user(id):
     print(id)
-    user = mongo.db.users.find_one({'_id': ObjectId(id), })
+    user = users.find_one({'_id': ObjectId(id), })
     response = json_util.dumps(user)
     return Response(response, mimetype="application/json")
 
 
 @app.route('/users/<id>', methods=['DELETE'])
 def delete_user(id):
-    mongo.db.users.delete_one({'_id': ObjectId(id)})
+    users.delete_one({'_id': ObjectId(id)})
     response = jsonify({'message': 'User' + id + ' Deleted Successfully'})
     response.status_code = 200
     return response
@@ -92,7 +95,7 @@ def update_user(_id):
     response = jsonify({'message': 'User Updated Successfuly'})
     response.status_code = 200
     return response
-    
+
 
 @app.errorhandler(404)
 def not_found(error=None):
@@ -107,3 +110,4 @@ def not_found(error=None):
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port = 8080, debug = True)
+
