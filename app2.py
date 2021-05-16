@@ -17,7 +17,7 @@ password_db = os.getenv('PASSWORD')
 user_db = os.getenv('USERNAME')
 port_db = os.getenv('PORT')
 if servicio_db == None:
-    servicio_db = "mongo-svc"
+    servicio_db = "localhost"
 if password_db == None:
     password_db = "admin"
 if user_db == None:
